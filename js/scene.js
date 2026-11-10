@@ -24,17 +24,26 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
 
   shapes.dust = make((p, a) => { for (let i = 0; i < N; i++) { put(p, i, rnd(-4.6, 4.6), rnd(-2.8, 2.8), rnd(-4, 1.2)); a[i] = rnd(.08, .5); } });
 
+  // Her aviators, modelled on the 1972 photograph: big rounded teardrop lenses, thin wire, a double bridge, long arms.
   shapes.glasses = make((p, a) => {
-    const lens = (t, side) => { // an aviator lens: flat on top, deeper below, drooping a little outwards
-      const c = Math.cos(t), s = Math.sin(t), low = Math.max(0, -s);
-      return [side * .76 + .6 * c + side * .07 * low * (1 - c * side) * .6, (s > 0 ? .38 : .56) * s - .03];
+    const pw = (v, e) => Math.sign(v) * Math.pow(Math.abs(v), e);
+    const lens = (t, side, k = 1) => {
+      const c = Math.cos(t), s = Math.sin(t), up = s > 0;
+      let x = .6 * pw(c, up ? .72 : .86), y = (up ? .44 : .62) * pw(s, up ? .62 : .9);
+      if (!up) x += side * .1 * -s * (1 - .5 * c * side); // the lower edge swings out towards the cheek
+      y += -side * x * .04;                                 // the top line dips a little towards the nose
+      return [side * .74 + x * k, y * k - .02];
     };
     for (let i = 0; i < N; i++) {
       const r = Math.random(), side = i % 2 ? 1 : -1;
-      if (r < .62) { const [x, y] = lens(rnd(Math.PI * 2), side); put(p, i, x + gauss() * .012, y + gauss() * .012, gauss() * .02); a[i] = 1; }
-      else if (r < .82) { const t = rnd(Math.PI * 2), k = Math.sqrt(Math.random()) * .96; const [x, y] = lens(t, side); put(p, i, side * .76 + (x - side * .76) * k, y * k, -.03); a[i] = .1 + .16 * (y > 0 ? 1 : .4); }
-      else if (r < .92) { const t = rnd(-1, 1), top = i % 4 < 2; put(p, i, t * .22, top ? .3 + gauss() * .008 : .12 - .07 * (1 - t * t) + gauss() * .008, 0); a[i] = .95; }
-      else { const t = Math.random(); put(p, i, side * (1.36 + t * .55), .26 - t * .05, -t * 1.1); a[i] = .7 * (1 - t * .8); }
+      if (r < .56) { const [x, y] = lens(rnd(Math.PI * 2), side); put(p, i, x + gauss() * .008, y + gauss() * .008, gauss() * .012); a[i] = 1; }
+      else if (r < .74) { const [x, y] = lens(rnd(Math.PI * 2), side, Math.sqrt(Math.random()) * .97); put(p, i, x, y, -.02); a[i] = .07 + .2 * Math.max(0, y + .2); }
+      else if (r < .8) { const t = rnd(-1, 1); put(p, i, t * .3, .4 + gauss() * .006, 0); a[i] = .95; }
+      else if (r < .85) { const t = rnd(-1, 1); put(p, i, t * .17, .17 - .09 * (1 - t * t) + gauss() * .006, 0); a[i] = .95; }
+      else { // an arm running back to the ear, with a hook at the end
+        const t = Math.random(), hook = t > .82 ? (t - .82) / .18 : 0;
+        put(p, i, side * (1.37 + .04 * t), .3 - .02 * t - .3 * hook * hook, -t * 2.3); a[i] = (side < 0 ? .95 : .3) * (1 - t * .35);
+      }
     }
   });
 
@@ -93,13 +102,26 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
   shapes.pyramid = cluster((j) => pyr(nodes[j]), 'pyr');
   shapes.circle = cluster((j) => cir(j), 'cir');
 
-  shapes.ms = make((p, a) => {
+  const textShape = (str, font, size, scale) => make((p, a) => {
     const c = document.createElement('canvas'); c.width = 760; c.height = 380; const g = c.getContext('2d', { willReadFrequently: true });
-    g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '600 330px Fraunces, Georgia, serif'; g.fillText('Ms.', 380, 200);
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `${font} ${size}px Fraunces, Georgia, serif`; g.fillText(str, 380, 200);
     const d = g.getImageData(0, 0, 760, 380).data, pts = [];
     for (let y = 0; y < 380; y += 2) for (let x = 0; x < 760; x += 2) if (d[(y * 760 + x) * 4 + 3] > 128) pts.push(x, y);
     const M = pts.length / 2 || 1;
-    for (let i = 0; i < N; i++) { const k = Math.floor(rnd(M)); put(p, i, ((pts[k * 2] || 380) - 380) / 215 + gauss() * .006, -((pts[k * 2 + 1] || 190) - 190) / 215 + gauss() * .006, gauss() * .06); a[i] = rnd(.55, 1); }
+    for (let i = 0; i < N; i++) { const k = Math.floor(rnd(M)); put(p, i, ((pts[k * 2] || 380) - 380) / scale + gauss() * .006, -((pts[k * 2 + 1] || 190) - 190) / scale + gauss() * .006, gauss() * .06); a[i] = rnd(.55, 1); }
+  });
+  shapes.ms = textShape('Ms.', '600', 330, 215);
+  shapes.question = textShape('?', 'italic 400', 360, 150);
+
+  // 38 lights, one for each state the amendment needed: 35 lit, three dark
+  shapes.tally = make((p, a) => {
+    const spot = (k) => { const row = Math.floor(k / 10), col = k % 10, n = row === 3 ? 8 : 10; return [(col - (n - 1) / 2) * .3, .62 - row * .4]; };
+    const each = Math.floor(N / 38);
+    for (let i = 0; i < N; i++) {
+      const k = Math.min(37, Math.floor(i / each)), [x, y] = spot(k), lit = k < 35, t = rnd(Math.PI * 2);
+      const r = lit ? Math.sqrt(Math.random()) * .1 : .1 + gauss() * .004;
+      put(p, i, x + r * Math.cos(t), y + r * Math.sin(t), gauss() * .02); a[i] = lit ? rnd(.6, 1) : .3;
+    }
   });
 
   shapes.rings = make((p, a) => {
@@ -112,7 +134,17 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
   });
 
   shapes.crowd = make((p, a) => {
-    for (let i = 0; i < N; i++) { const z = 2.4 - Math.pow(Math.random(), 1.25) * 20; const w = 2.2 + (2.4 - z) * .55; put(p, i, rnd(-w, w), -1.15 + Math.abs(gauss()) * .09, z); a[i] = rnd(.35, 1); }
+    const signs = []; for (let k = 0; k < 46; k++) { const z = 2 - Math.pow(Math.random(), 1.1) * 13; signs.push([rnd(-1, 1) * (1.8 + (2.4 - z) * .5), z, rnd(.16, .26), rnd(.1, .16), rnd(.2, .38)]); }
+    for (let i = 0; i < N; i++) {
+      if (i % 9 === 0) { // a placard held over the heads
+        const [sx, sz, w, h, up] = signs[i % signs.length], e = Math.floor(rnd(5)), t = Math.random();
+        if (e === 4) { put(p, i, sx, -1.08 + t * up, sz); a[i] = .5; }
+        else { const x = e < 2 ? (t - .5) * w : (e === 2 ? -w / 2 : w / 2), y = e < 2 ? (e ? h : 0) : t * h; put(p, i, sx + x, -1.08 + up + y, sz); a[i] = .95; }
+      } else { // a head and shoulders
+        const z = 2.4 - Math.pow(Math.random(), 1.25) * 20, w = 2.2 + (2.4 - z) * .55, head = i % 3 === 0;
+        put(p, i, rnd(-w, w), head ? -1.03 + gauss() * .012 : -1.15 + Math.abs(gauss()) * .06, z); a[i] = head ? 1 : rnd(.3, .7);
+      }
+    }
   });
 
   const T = mobile ? 70 : 130, tPer = Math.floor(N / T), torch = [];
@@ -150,7 +182,7 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
         float k = sin(m * 3.14159);
         p += k * 0.42 * vec3(sin(aRand * 40.0 + uTime * 0.6), cos(aRand * 31.0 + uTime * 0.5), sin(aRand * 17.0 + uTime * 0.4));
         p += 0.011 * vec3(sin(uTime * 0.7 + aRand * 50.0), cos(uTime * 0.6 + aRand * 70.0), sin(uTime * 0.5 + aRand * 90.0));
-        p.y += uWave * (0.05 * sin(p.x * 2.1 + p.z * 1.2 + uTime * 1.5) + 0.03 * sin(p.x * 5.0 - uTime * 2.0 + aRand * 6.0));
+        p.y += uWave * 0.016 * sin(p.x * 3.0 + p.z * 2.0 + uTime * 1.3);
         p.y += uFlick * 0.03 * sin(uTime * 5.0 + aRand * 60.0) * fract(aRand * 9.0);
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
@@ -185,12 +217,17 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
     const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3));
     kitMat.l = new THREE.LineBasicMaterial({ color: '#ffb35a', transparent: true, opacity: 0, depthTest: false });
     globeKit.add(new THREE.LineSegments(lg, kitMat.l));
+    kitMat.d = new THREE.LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0, depthTest: false });
+    var done = new THREE.LineSegments(lg.clone(), kitMat.d); done.geometry.setDrawRange(0, 0); globeKit.add(done);
+    kitMat.s = new THREE.PointsMaterial({ size: .3, map: kitMat.m.map, transparent: true, depthWrite: false, depthTest: false, color: '#ffffff', opacity: 0 });
+    var here = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(3), 3)), kitMat.s); here.frustumCulled = false; globeKit.add(here);
     kitMat.r = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0, side: THREE.DoubleSide, depthTest: false });
     var ring = new THREE.Mesh(new THREE.RingGeometry(.05, .062, 40), kitMat.r); globeKit.add(ring);
   }
 
   // ---------- state ----------
-  const S = { shape: 'dust', x: 0, y: 0, tx: 0, ty: 0, scale: 1, rotX: 0, rotY: 0, tRotX: 0, tRotY: 0, drag: false, px: 0, py: 0, autoSpin: 0, visible: true, torchLive: false };
+  const POSE = { glasses: [.08, .6, -.1] }; // three-quarter view, as she wears them in the photograph below the title
+  const S = { rotZ: 0, tRotZ: 0, shape: 'dust', x: 0, y: 0, tx: 0, ty: 0, scale: 1, rotX: 0, rotY: 0, tRotX: 0, tRotY: 0, drag: false, px: 0, py: 0, autoSpin: 0, visible: true, torchLive: false };
   const dur = (d) => (reduced ? 0.01 : d);
   const gs = window.gsap;
   const ease = (m) => m * m * (3 - 2 * m);
@@ -205,19 +242,21 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
   }
   function setShape(name, opts = {}) {
     if (!shapes[name] || (name === S.shape && !opts.force)) return;
-    gs.killTweensOf(U.uMix); freeze();
+    gs.killTweensOf(U.uMix); S.pendingRank = null; freeze();
     aTo.array.set(shapes[name].pos); aAT.array.set(shapes[name].al); aTo.needsUpdate = true; aAT.needsUpdate = true;
     U.uStag.value = opts.stag ?? .55; U.uMix.value = 0; S.shape = name;
-    if (!opts.manual) gs.to(U.uMix, { value: 1, duration: dur(opts.dur ?? 2.6), ease: 'power2.inOut' });
+    S.morphing = true;
+    gs.to(U.uMix, { value: 1, duration: dur(opts.dur ?? 2.6), ease: 'power2.inOut', onComplete: () => { S.morphing = false; if (S.pendingRank != null) { const v = S.pendingRank; S.pendingRank = null; setRank(v); } } });
     gs.to(U.uWave, { value: name === 'crowd' ? 1 : 0, duration: dur(1.5) });
     gs.to(U.uFlick, { value: name === 'torches' ? 1 : 0, duration: dur(1.5) });
     const g = name === 'globe'; if (g) globeKit.visible = true;
-    for (const k of ['m', 'l', 'r']) if (kitMat[k]) gs.to(kitMat[k], { opacity: g ? (k === 'l' ? .55 : k === 'r' ? 0 : 1) : 0, duration: dur(g ? 2 : .5), delay: g ? dur(1.6) : 0, onComplete: () => { if (!g && S.shape !== 'globe') globeKit.visible = false; } });
-    if (!g) { S.tRotX = 0; S.tRotY = 0; S.autoSpin = 0; }
+    for (const k of ['m', 'l', 'r', 'd', 's']) if (kitMat[k]) gs.to(kitMat[k], { opacity: g ? ({ l: .28, r: 0, m: .7, d: .95, s: 1 })[k] : 0, duration: dur(g ? 2 : .5), delay: g ? dur(1.6) : 0, onComplete: () => { if (!g && S.shape !== 'globe') globeKit.visible = false; } });
+    if (!g) { const [rx, ry, rz] = POSE[name] || [0, 0, 0]; S.tRotX = rx; S.tRotY = ry; S.tRotZ = rz; S.autoSpin = 0; } else S.tRotZ = 0;
   }
   // the ranked-to-linked slider drives the morph by hand
   function setRank(v) {
-    if (S.shape !== 'pyramid' && S.shape !== 'circle') return;
+    if (S.shape !== 'pyramid' && S.shape !== 'circle') { S.pendingRank = v; setShape(v > .5 ? 'circle' : 'pyramid', { dur: 1.6 }); return; }
+    if (S.morphing) { S.pendingRank = v; return; }
     gs.killTweensOf(U.uMix);
     aFrom.array.set(shapes.pyramid.pos); aAF.array.set(shapes.pyramid.al); aTo.array.set(shapes.circle.pos); aAT.array.set(shapes.circle.al);
     aFrom.needsUpdate = aTo.needsUpdate = aAF.needsUpdate = aAT.needsUpdate = true;
@@ -229,10 +268,12 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
     S.tRotX = lat * DEG * .85; let ty = -lon * DEG; const cur = S.tRotY; ty += Math.round((cur - ty) / (Math.PI * 2)) * Math.PI * 2; S.tRotY = ty; S.autoSpin = spinAfter ? 1 : 0;
   }
   function selectPlace(i) {
-    const pl = places[i]; if (!pl || !ring) return; lookAt(pl.lat, pl.lon);
+    const pl = places[i]; if (!pl || !ring) return; lookAt(pl.lat, pl.lon); S.sel = i;
     const v = new THREE.Vector3(...ll(pl.lat, pl.lon, R * 1.016)); ring.position.copy(v); ring.lookAt(v.clone().multiplyScalar(2));
-    gs.killTweensOf(ring.scale); gs.killTweensOf(kitMat.r); ring.scale.setScalar(.6); kitMat.r.opacity = 1;
-    if (!reduced) gs.to(ring.scale, { x: 2.6, y: 2.6, z: 2.6, duration: 1.6, repeat: -1, ease: 'power1.out' }), gs.to(kitMat.r, { opacity: 0, duration: 1.6, repeat: -1, ease: 'power1.in' });
+    here.geometry.attributes.position.setXYZ(0, v.x, v.y, v.z); here.geometry.attributes.position.needsUpdate = true;
+    done.geometry.setDrawRange(0, i * 80);
+    gs.killTweensOf(ring.scale); gs.killTweensOf(kitMat.r); ring.scale.setScalar(.8); kitMat.r.opacity = 1;
+    if (!reduced) gs.to(ring.scale, { x: 3.4, y: 3.4, z: 3.4, duration: 1.6, repeat: -1, ease: 'power1.out' }), gs.to(kitMat.r, { opacity: 0, duration: 1.6, repeat: -1, ease: 'power1.in' });
   }
   function setVisible(v) { S.visible = v; canvas.classList.toggle('on', v); }
 
@@ -245,7 +286,6 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
     if (S.shape === 'torches') { const o = { v: 0 }; gs.to(o, { v: 1, duration: dur(.9), onUpdate: () => { for (let i = from; i < to; i++) aAT.array[i] = .1 + (sh[i] - .1) * o.v; aAT.needsUpdate = true; } }); }
     return true;
   }
-  function lightNext() { const dark = torch.map((f, i) => (f.lit ? -1 : i)).filter((i) => i >= 0); if (dark.length) light(dark[Math.floor(rnd(dark.length))]); return { lit, total: T }; }
   const v3 = new THREE.Vector3();
   function lightNear(cx, cy) { // pointer in normalised device coordinates
     if (S.shape !== 'torches') return null; let hit = false;
@@ -257,10 +297,22 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
   window.addEventListener('pointermove', (e) => {
     S.px = (e.clientX / window.innerWidth) * 2 - 1; S.py = -((e.clientY / window.innerHeight) * 2 - 1);
     if (S.drag) { S.tRotY += (e.clientX - S.lx) * .006; S.tRotX = Math.max(-1.2, Math.min(1.2, S.tRotX + (e.clientY - S.ly) * .005)); S.lx = e.clientX; S.ly = e.clientY; S.autoSpin = 0; }
-    if (S.torchLive) { const r = lightNear(S.px, S.py); if (r && api.onLight) api.onLight(r); }
+    if (S.torchLive) lightNear(S.px, S.py);
   }, { passive: true });
-  canvas.addEventListener('pointerdown', (e) => { if (S.shape === 'globe') { S.drag = true; S.lx = e.clientX; S.ly = e.clientY; canvas.style.cursor = 'grabbing'; } });
-  window.addEventListener('pointerup', () => { S.drag = false; canvas.style.cursor = ''; });
+  // The page content sits above the canvas, so dragging is bound to an element in the page.
+  function bindDrag(el) {
+    el.addEventListener('pointerdown', (e) => { if (S.shape !== 'globe') return; S.drag = true; S.lx = e.clientX; S.ly = e.clientY; el.classList.add('dragging'); });
+    const end = () => { S.drag = false; el.classList.remove('dragging'); };
+    window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
+  }
+  const pv = new THREE.Vector3();
+  function placeOnScreen(i) { // where a place sits on the page, and whether it faces us
+    const pl = places[i]; if (!pl) return null;
+    pv.set(...ll(pl.lat, pl.lon, R * 1.02)).applyMatrix4(points.matrixWorld);
+    const facing = pv.clone().sub(rig.position).normalize().dot(camera.position.clone().sub(pv).normalize()) > .12;
+    pv.project(camera);
+    return { x: (pv.x + 1) / 2 * canvas.clientWidth, y: (1 - pv.y) / 2 * canvas.clientHeight, facing };
+  }
 
   // ---------- loop ----------
   function resize() {
@@ -279,16 +331,18 @@ export function createScene(canvas, { reduced = false, mobile = false, land = []
     const k = reduced ? 1 : 1 - Math.pow(.0018, dt);
     S.x += (S.tx * S.halfW - S.x) * k; S.y += (S.ty * S.halfH - S.y) * k;
     const flat = S.shape === 'road' || S.shape === 'crowd' || S.shape === 'dust' || S.shape === 'torches';
+    if (S.shape === 'globe' && here) kitMat.s.size = .26 + .06 * Math.sin(now / 260);
     const sc = flat ? 1 : S.fit * (S.narrow ? .92 : 1); S.scale += (sc - S.scale) * k;
     rig.position.set(S.x, S.y, 0); rig.scale.setScalar(S.scale);
     if (S.shape === 'globe' && S.autoSpin && !S.drag && !reduced) S.tRotY += dt * .12;
     const sway = S.shape === 'globe' || reduced ? 0 : 1;
     S.rotX += (S.tRotX - S.py * .1 * sway - S.rotX) * k; S.rotY += (S.tRotY + S.px * .16 * sway - S.rotY) * k;
-    spin.rotation.set(S.rotX, S.rotY, 0);
+    S.rotZ += (S.tRotZ - S.rotZ) * k;
+    spin.rotation.set(S.rotX, S.rotY, S.rotZ);
     renderer.render(scene, camera);
   }
   raf = requestAnimationFrame(frame);
 
-  const api = { setShape, setRank, setColors, place, lookAt, selectPlace, setVisible, lightNext, torchLive: (v) => { S.torchLive = v; }, unlockRank: () => { S.rankLock = false; }, get shape() { return S.shape; }, state: S, onLight: null, counts: () => ({ lit, total: T }) };
+  const api = { setShape, setRank, setColors, place, lookAt, selectPlace, setVisible, bindDrag, placeOnScreen, torchLive: (v) => { S.torchLive = v; }, unlockRank: () => { S.rankLock = false; }, get shape() { return S.shape; }, state: S, onLight: null, counts: () => ({ lit, total: T }) };
   return api;
 }

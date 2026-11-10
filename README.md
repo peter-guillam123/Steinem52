@@ -2,7 +2,7 @@
 
 A scrolling interactive on the life of Gloria Steinem (25 March 1934 – 2 September 2026), told as far as possible in her own words.
 
-Ten chapters, a particle scene that changes shape for each one, and eight small interactives. Every quotation was checked against the full text of the source it cites, and the sources are listed at the foot of the page.
+Ten chapters, a particle scene that changes shape for each one, and a handful of things to explore: the route of her life on a globe, women in Congress since 1917, and what changed while Roe v Wade stood. Every quotation was checked against the full text of the source it cites, and the sources are listed at the foot of the page.
 
 ## Run it
 
