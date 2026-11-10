@@ -42,7 +42,7 @@
 <main id="main">
 
 <!-- ============ HERO ============ -->
-<section class="hero" id="top" data-scene="glasses" data-theme="hero" data-year="1934" data-pos="0.42,0.2,1">
+<section class="hero" id="top" data-scene="glasses" data-theme="hero" data-year="1934" data-pos="0.5,0.2,1">
   <h1><span class="ln"><span>Gloria</span></span><span class="ln"><span><em>Steinem</em></span></span></h1>
   <p class="dates"><span>25 March 1934, Toledo, Ohio</span><span>2 September 2026, New York City</span></p>
   <p class="stand">Asked what superpower she would choose, she said: <q>To be able to show people that we are linked, not ranked.</q><a class="cite" href="#s9">9</a> This is her life in 10 chapters, told as far as possible in her own words.</p>
@@ -121,11 +121,12 @@
     <div class="panel rv">
       <span class="tag">Explore · the map of a life</span>
       <h3>“A western version of walking in villages”</h3>
-      <p class="note" style="margin:0 0 18px">That is how she described her later decades on the road in America.<a class="cite" href="#s3">3</a> Pick a place, or drag the globe.</p>
+      <p class="note" style="margin:0 0 18px">That is how she described her later decades on the road in America.<a class="cite" href="#s3">3</a> Follow the route place by place, or drag the globe to look around.</p>
       <ul class="places" id="places" aria-label="Places in her life"></ul>
       <div class="place-card" id="placeCard" aria-live="polite"></div>
+      <div class="steps"><button class="btn" type="button" id="placePrev" aria-label="Previous place">←</button><button class="btn solid" type="button" id="placeNext">Next place →</button></div>
     </div>
-    <div class="globe-space" aria-hidden="true"></div>
+    <div class="globe-space" id="globeDrag" aria-hidden="true"><span class="globe-label" id="globeLabel"></span></div>
   </div>
 </section>
 
@@ -205,25 +206,25 @@
   </div>
 </section>
 
-<section class="band" data-scene="pyramid" data-theme="click" data-year="1971" data-pos="0.46,0,1" data-rank="live">
-  <div class="lab globe-lab">
-    <div class="panel rv">
-      <span class="tag">Explore · her central idea</span>
-      <h3>Linked, not ranked</h3>
-      <p class="note" style="margin:0 0 22px">She thought most of what is wrong comes from arranging people in a pyramid, and most of what works comes from sitting them in a circle. Drag the slider.</p>
-      <div class="rankctl">
-        <div class="ends" aria-hidden="true"><span id="endA">Ranked</span><span id="endB">Linked</span></div>
-        <label class="sr" for="rankRange">Move from a ranked pyramid to a linked circle</label>
-        <input type="range" id="rankRange" min="0" max="100" value="0" step="1">
-        <output id="rankOut" for="rankRange">A pyramid. A few at the top, most at the bottom, and orders that travel one way.</output>
-      </div>
-    </div>
-    <div class="globe-space" aria-hidden="true"></div>
-  </div>
-</section>
-
-<section class="band" data-scene="circle" data-theme="click" data-year="1971" data-pos="0.5,0,0.5">
-  <blockquote class="say sm"><p>The ancient and modern magic of groups in which anyone may speak in turn, everyone must listen and <em>consensus is more important than time.</em></p><footer>On talking circles, from My Life on the Road, as quoted in the Guardian<a class="cite" href="#s3">3</a></footer></blockquote>
+<section class="scrolly" id="linked" data-scene="pyramid" data-theme="click" data-year="1971" data-pos="0.44,0,1" data-rank="scroll">
+  <div class="step"><div class="panel">
+    <span class="tag">Her central idea</span>
+    <h3>Linked, not ranked</h3>
+    <p>Start with a pyramid. A few people at the top, most at the bottom, and orders that travel one way. Steinem thought most of what goes wrong between people starts with this shape.</p>
+    <p>Sex and race, she said in 1971, had been “the primary ways of organising human beings into superior and inferior groups”.<a class="cite" href="#s2">2</a></p>
+  </div></div>
+  <div class="step"><div class="panel">
+    <p class="lead">She had seen another shape in India.</p>
+    <p>In villages, and in a railway carriage full of women, people sat round and talked. She remembered “the ancient and modern magic of groups in which anyone may speak in turn, everyone must listen and consensus is more important than time”.<a class="cite" href="#s3">3</a></p>
+  </div></div>
+  <div class="step"><div class="panel">
+    <p class="lead">So the aim was never to change who sat at the top.</p>
+    <p><strong>“We wanted to transform the system, not imitate it.”</strong><a class="cite" href="#s5">5</a> Loosen the rows, and the people at the bottom can see past the people above them.</p>
+  </div></div>
+  <div class="step"><div class="panel">
+    <p class="lead">A circle has no top.</p>
+    <p>Everyone can see everyone else's face. Her phrase for it was <strong>“linked, not ranked”</strong>.<a class="cite" href="#s16">16</a> She was still gathering women in talking circles at her house in the last year of her life.<a class="cite" href="#s28">28</a></p>
+  </div></div>
 </section>
 
 <!-- ============ 5 MS ============ -->
@@ -233,20 +234,11 @@
   <p class="dek">They named it the preview issue because they thought it might be the only one.</p>
 </section>
 
-<section class="band" data-scene="ms" data-theme="ms" data-year="1971" data-pos="0.75,-0.3,0.1">
-  <div class="lab">
-    <header class="rv"><span class="tag">Explore · the names they turned down</span><h3>What to call it</h3><p>Ms. first appeared on 20 December 1971 as a 40-page insert in New York magazine.<a class="cite" href="#s13">13</a> Other names were on the table. Try them on the masthead.</p></header>
-    <div class="mast panel rv">
-      <span class="name" id="mastName" aria-live="polite">Ms.</span>
-      <p class="why" id="mastWhy">The winner. It came from a 1930s secretarial handbook, which advised it when a woman's marital status was unknown.<a class="cite" href="#s12">12</a></p>
-      <div class="row" id="mastRow" role="group" aria-label="Names considered for the magazine">
-        <button class="btn" type="button" data-n="Sojourner" data-no="1">Sojourner</button>
-        <button class="btn" type="button" data-n="Lilith" data-no="1">Lilith</button>
-        <button class="btn" type="button" data-n="Bimbo" data-no="1">Bimbo</button>
-        <button class="btn" type="button" data-n="Ms." aria-pressed="true">Ms.</button>
-      </div>
-    </div>
-    <p class="note rv">“It took something like 15 years for the New York Times to use it,” she said in 2022. “I was Miss Steinem of Ms magazine.”<a class="cite" href="#s12">12</a></p>
+<section class="band" data-scene="ms" data-theme="ms" data-year="1971" data-pos="0.5,0,0.55">
+  <div class="text panel rv">
+    <p class="lead">Ms. first appeared on 20 December 1971 as a 40-page insert in New York magazine.<a class="cite" href="#s13">13</a></p>
+    <p>The name came from a 1930s secretarial handbook, which advised it when a woman's marital status was unknown. The founders also weighed Sojourner, after Sojourner Truth, which was dropped for sounding “too much like a travel magazine”.<a class="cite" href="#s12">12</a> Lilith was on the list too. So was Bimbo.<a class="cite" href="#s4">4</a></p>
+    <p>“It took something like 15 years for the New York Times to use it,” she said in 2022. <strong>“I was Miss Steinem of Ms magazine.”</strong><a class="cite" href="#s12">12</a></p>
   </div>
 </section>
 
@@ -282,13 +274,13 @@
 </section>
 
 <!-- ============ 6 ERA ============ -->
-<section class="opener right" id="era" data-chapter data-scene="dust" data-theme="era" data-year="1972" data-pos="0,0,0.8">
+<section class="opener right" id="era" data-chapter data-scene="tally" data-theme="era" data-year="1972" data-pos="-0.42,0,1">
   <p class="no">Chapter 6 <span>1972–1982</span></p>
   <h2>Thirty-five of <em>thirty-eight</em></h2>
-  <p class="dek">Twenty-four words about equality needed 38 states. The count stopped three short.</p>
+  <p class="dek">Twenty-four words about equality needed 38 states. Each light here is a state that said yes. Three stayed dark.</p>
 </section>
 
-<section class="band" data-scene="dust" data-theme="era" data-year="1972" data-year-end="1982" data-pos="0,0,0.3">
+<section class="band" data-scene="tally" data-theme="era" data-year="1972" data-year-end="1982" data-pos="0.86,-0.7,0.1">
   <div class="lab">
     <header class="rv"><span class="tag">Explore · state by state</span><h3>The Equal Rights Amendment</h3><p>Congress sent the amendment to the states in 1972 with a deadline, later extended to 1982.<a class="cite" href="#s36">36</a> Step through the years.</p></header>
     <div class="era panel">
@@ -306,7 +298,7 @@
   </div>
 </section>
 
-<section class="band" data-scene="dust" data-theme="era" data-year="1977" data-year-end="1982" data-pos="0,0,0.3">
+<section class="band" data-scene="tally" data-theme="era" data-year="1977" data-year-end="1982" data-pos="0.86,-0.7,0.1">
   <div class="text panel rv">
     <p class="lead">The usual story is that the conservative campaigner Phyllis Schlafly beat the amendment. Steinem never accepted that.</p>
     <p>“I don't believe she changed one vote,” she said in 2020. <strong>“The insurance industry here opposed the equal rights amendment because if they stopped segregating their actuarial tables it would cost them millions upon millions of dollars.”</strong><a class="cite" href="#s21">21</a></p>
@@ -318,22 +310,26 @@
   </figure>
 </section>
 
-<section class="band" data-scene="dust" data-theme="era" data-year="1978" data-pos="0,0,0.3">
+<section class="band" data-scene="tally" data-theme="era" data-year="1978" data-pos="0.86,-0.7,0.1">
   <div class="lab">
     <header class="rv"><span class="tag">Play · five lines</span><h3>Who said it?</h3><p>She was quoted so often that lines stuck to her whether or not they were hers. She tried to give them back. Guess.</p></header>
     <div class="quiz" id="quiz"></div>
   </div>
 </section>
 
-<section class="band" data-scene="dust" data-theme="era" data-year="1971" data-year-end="2026" data-pos="0,0,0.3">
+<section class="band" data-scene="tally" data-theme="era" data-year="1971" data-year-end="2026" data-pos="0.86,-0.7,0.1">
   <div class="lab">
-    <header class="rv"><span class="tag">Explore · 1917 to 2026</span><h3>Women in Congress, across her lifetime</h3><p>The caucus she helped found in 1971 existed to put women in office. Each bar is one Congress. Hover, tap or use the arrow keys.</p></header>
+    <header class="rv"><span class="tag">Explore · 1917 to 2026</span><h3>Who got in, and what they changed</h3><p>The caucus she helped found in 1971 existed to put women in office. Each bar is one Congress. Pick any bar to see who arrived, or step through the key years.</p></header>
     <div class="chart panel rv" id="chart">
-      <div class="readout"><b id="cgN">8</b><span id="cgT"></span></div>
+      <div class="cg">
+        <div class="cg-a"><p class="yr" id="cgY"></p><b id="cgN">1</b><p id="cgT"></p></div>
+        <div class="cg-b"><p class="cg-note" id="cgNote" aria-live="polite"></p><p class="cg-names" id="cgNames"></p></div>
+      </div>
       <div class="bars" id="bars" role="group" aria-label="Number of women serving as voting members in each Congress, 1917 to 2026"></div>
       <div class="axis"><span>1917</span><span>1934: she is born</span><span>1971: the caucus</span><span>2025</span></div>
+      <div class="steps" style="margin-top:18px"><button class="btn" type="button" id="cgPrev" aria-label="Earlier key year">←</button><button class="btn solid" type="button" id="cgNext">Next key year →</button></div>
     </div>
-    <p class="note rv">Counts are women who served as voting members at any point in each two-year Congress, worked out from the open congress-legislators dataset.<a class="cite" href="#s40">40</a> A count taken on a single day would be slightly lower.</p>
+    <p class="note rv">Counts are women who served as voting members at any point in each two-year Congress, worked out from the open congress-legislators dataset, as are the names of new arrivals.<a class="cite" href="#s40">40</a> A count taken on a single day would be slightly lower.</p>
   </div>
 </section>
 
@@ -366,13 +362,13 @@
 </section>
 
 <!-- ============ 8 ARGUMENTS ============ -->
-<section class="opener right" id="argue" data-chapter data-scene="dust" data-theme="argue" data-year="1975" data-pos="0,0,0.8">
+<section class="opener right" id="argue" data-chapter data-scene="question" data-theme="argue" data-year="1975" data-pos="-0.42,0,1">
   <p class="no">Chapter 8 <span>The case against</span></p>
   <h2>Argu<em>ments</em></h2>
   <p class="dek">She was criticised from the right all her life and from the left for much of it. Here are the main charges, and what she said.</p>
 </section>
 
-<section class="band" data-scene="dust" data-theme="argue" data-year="1975" data-year-end="2017" data-pos="0,0,0.25">
+<section class="band" data-scene="question" data-theme="argue" data-year="1975" data-year-end="2017" data-pos="0.8,0,0.12">
   <div class="lab">
     <div class="args rv">
       <details open><summary>She took the CIA's money</summary><div><p>After India she directed the Independent Research Service, which sent young Americans to Soviet-backed youth festivals in Vienna and Helsinki. It was paid for by the CIA.<a class="cite" href="#s2">2</a><a class="cite" href="#s1">1</a> In 1975 the Redstockings group claimed the agency had installed her as a leader of the movement.<a class="cite" href="#s1">1</a></p><p>She said she had always known who was paying.<a class="cite" href="#s2">2</a> In 2017 she wrote: <q>since a couple of times they've also referred to me as a former CIA agent, because I went to two Soviet-era communist youth festivals, I probably shouldn't have done that, either.</q><a class="cite" href="#s9">9</a></p></div></details>
@@ -390,13 +386,13 @@
 <section class="opener" id="march" data-chapter data-scene="crowd" data-theme="march" data-year="2013" data-pos="0,-0.2,1">
   <p class="no">Chapter 9 <span>2013–2017</span></p>
   <h2>Never <em>going home</em></h2>
-  <p class="dek">In her eighties she collected a medal, crossed a border and spoke to the Women's March on Washington.</p>
+  <p class="dek">In her eighties she collected a medal, crossed a border, and stood in front of a crowd that ran to the horizon.</p>
 </section>
 
 <section class="band" data-scene="crowd" data-theme="march" data-year="2013" data-year-end="2015" data-pos="0,-0.3,0.5">
   <div class="text panel rv">
     <p class="lead">On 20 November 2013 Barack Obama gave her the Presidential Medal of Freedom at the White House.<a class="cite" href="#s1">1</a><a class="cite" href="#s42">42</a></p>
-    <p>On 24 May 2015, aged 81, she crossed from North to South Korea with 30 women from 15 countries, among them two Nobel peace laureates. Critics said the North had used them. <strong>“We are trying to make person by person connections, so that there is understanding,”</strong> she said.<a class="cite" href="#s22">22</a></p>
+    <p>On 24 May 2015, aged 81, she crossed from North to South Korea in a group of 30 activists from 15 countries, among them two Nobel peace laureates. Critics said the North had used them. <strong>“We are trying to make person by person connections, so that there is understanding,”</strong> she said.<a class="cite" href="#s22">22</a></p>
     <p>That autumn she published My Life on the Road, dedicated to the London doctor.<a class="cite" href="#s5">5</a></p>
   </div>
   <figure class="fig rv">
@@ -436,14 +432,13 @@
 
 <section class="band" data-scene="torches" data-theme="end" data-year="2022" data-pos="0,0,0.4">
   <div class="lab">
-    <header class="rv"><span class="tag">See · 92 years</span><h3>She outlived Roe</h3><p>The Supreme Court recognised a constitutional right to abortion on 22 January 1973, when she was 38. It withdrew it on 24 June 2022, when she was 88.<a class="cite" href="#s41">41</a> The right lasted 49 of her 92 years.</p></header>
-    <div class="panel rv">
-      <div class="span92 rv" id="span92" style="--a:42%;--w:53.4%" role="img" aria-label="A bar for her life from 1934 to 2026, with the years 1973 to 2022, when Roe v Wade stood, marked">
-        <div class="life"></div><div class="roe"></div>
-        <em style="left:0">1934</em><em class="m" style="left:68.7%">Roe v Wade stands, 1973–2022</em><em class="e">2026</em>
-      </div>
-      <p style="margin:26px 0 0;color:var(--soft)">Asked that year how she felt about women's progress, she said: <strong style="color:var(--ink)">“I feel proud, and I feel mad as hell … We are dealing with the same issues.”</strong><a class="cite" href="#s12">12</a></p>
+    <header class="rv"><span class="tag">Play · 49 years</span><h3>While Roe stood</h3><p>The Supreme Court recognised a constitutional right to abortion on 22 January 1973, when she was 38. It withdrew it on 24 June 2022, when she was 88.<a class="cite" href="#s41">41</a> Here is what else changed for American women in between.</p></header>
+    <div class="panel rv" id="roe">
+      <div class="roe-track" id="roeTrack" role="group" aria-label="Events between 1973 and 2022"><div class="life"></div><div class="span"></div><em style="left:0">1934</em><em class="e">2026</em></div>
+      <div class="roe-card" aria-live="polite"><b id="roeYr">1973</b><div><h4 id="roeH"></h4><p id="roeP"></p></div></div>
+      <div class="steps"><button class="btn" type="button" id="roePrev" aria-label="Previous event">←</button><button class="btn solid" type="button" id="roeNext">Next →</button><button class="btn" type="button" id="roePlay">Play</button><span class="roe-n" id="roeN"></span></div>
     </div>
+    <p class="note rv">Asked in 2022 how she felt about women's progress, she said: “I feel proud, and I feel mad as hell … We are dealing with the same issues.”<a class="cite" href="#s12">12</a></p>
   </div>
 </section>
 
@@ -469,7 +464,6 @@
     <p class="kicker">Asked, at 82, to name her greatest achievement</p>
     <h2>“I haven't done it <em>yet.</em>”<a class="cite" href="#s9" style="font-size:13px;vertical-align:top;letter-spacing:0">9</a></h2>
     <p>Gloria Steinem · 1934–2026</p>
-    <div class="light"><button class="btn solid" type="button" id="lightBtn">Light another torch</button><p id="lightCount" aria-live="polite" style="margin-top:14px">Move across the dark, or press the button.</p></div>
   </div>
 </section>
 
@@ -541,11 +535,26 @@
         <li id="s38">US National Archives, <a href="https://www.archives.gov/files/foia/pdf/era-list-of-state-ratification-actions-03-24-2020.pdf">Equal Rights Amendment: list of state ratification actions</a>, 24 March 2020. We could not open this file directly while building; the dates were read from search results and are shown by year only.</li>
         <li id="s39">Congressional Research Service, <a href="https://www.congress.gov/crs-product/R42979">The Proposed Equal Rights Amendment: Contemporary Ratification Issues</a> (R42979). Same caution as 38.</li>
         <li id="s40"><a href="https://github.com/unitedstates/congress-legislators">unitedstates/congress-legislators</a>, an open dataset of every member of Congress. Counts computed for this piece, November 2026.</li>
-        <li id="s41">Roe v Wade, 410 US 113 (decided 22 January 1973); Dobbs v Jackson Women's Health Organization, 597 US 215 (decided 24 June 2022). Dates from <a href="https://www.oyez.org/">Oyez</a> case data.</li>
+        <li id="s41">Supreme Court decisions, with their dates, votes and holdings, from <a href="https://www.oyez.org/">Oyez</a> case data: Roe v Wade (1973), Pittsburgh Press v Pittsburgh Commission on Human Relations (1973), Taylor v Louisiana (1975), Meritor Savings Bank v Vinson (1986), Planned Parenthood v Casey (1992), United States v Virginia (1996), Obergefell v Hodges (2015) and Dobbs v Jackson Women's Health Organization (2022).</li>
         <li id="s42"><a href="https://www.theguardian.com/books/gallery/2026/sep/03/gloria-steinem-a-life-in-pictures">Gloria Steinem: a life in pictures</a>, the Guardian, 3 September 2026.</li>
         <li id="s43">Kira Cochrane, <a href="https://www.theguardian.com/lifeandstyle/2011/may/31/playboy-hugh-hefner-sexism">Is the Playboy party over?</a>, the Guardian, 31 May 2011.</li>
         <li id="s44">Jessica Valenti, <a href="https://www.theguardian.com/commentisfree/2015/oct/14/playboy-old-sexism-make-money">Playboy just learned that old sexism doesn't make money anymore</a>, the Guardian, 14 October 2015.</li>
         <li id="s45">Coordinates for the globe: <a href="https://github.com/lutangar/cities.json">cities.json</a>, derived from GeoNames (CC BY 4.0). Land shapes: <a href="https://www.naturalearthdata.com/">Natural Earth</a>, public domain.</li>
+        <li id="s46">Lauren Niland, <a href="https://www.theguardian.com/theguardian/from-the-archive-blog/2012/nov/08/first-woman-senator-rebecca-felton-1922">Rebecca Latimer Felton – America's first female senator</a>, the Guardian, 8 November 2012.</li>
+        <li id="s47">Moira Donegan, <a href="https://www.theguardian.com/commentisfree/2019/jul/06/usa-womens-world-cup-netherlands-title-xi">USA's formidable women's team is no accident. It's a product of public policy</a>, the Guardian, 6 July 2019.</li>
+        <li id="s48">Martin Pengelly, <a href="https://www.theguardian.com/us-news/2024/nov/05/maryland-senate-seat">Maryland Senate results: Democrat Angela Alsobrooks defeats Larry Hogan</a>, the Guardian, 6 November 2024.</li>
+        <li id="s49">Chris Stein, <a href="https://www.theguardian.com/us-news/2026/feb/04/nancy-pelosi-press-freedom-under-siege">Nancy Pelosi warns press freedom is ‘under siege’ after arrest of journalist</a>, the Guardian, 5 February 2026.</li>
+        <li id="s50">Cecilia Nowell, <a href="https://www.theguardian.com/us-news/2026/nov/03/deb-haaland-new-mexico-governor">Deb Haaland wins in New Mexico and will become first female Native American governor</a>, the Guardian, 4 November 2026.</li>
+        <li id="s51">Stefanie O'Connell, <a href="https://www.theguardian.com/lifeandstyle/2026/may/13/women-home-buyers-men-dating">Single women are buying more houses. The men they are dating are not responding well</a>, the Guardian, 13 May 2026.</li>
+        <li id="s52">Molly Redden, <a href="https://www.theguardian.com/us-news/2017/jun/27/trump-healthcare-bill-pregnant-women-maternity-coverage">GOP healthcare bill may send pregnant women back to days without coverage</a>, the Guardian, 27 June 2017.</li>
+        <li id="s53">Angelina Chapin, <a href="https://www.theguardian.com/commentisfree/2017/jun/15/virginia-gunman-reminder-domestic-abusers-danger-society">The Virginia gunman is a reminder: domestic abusers are a danger to society</a>, the Guardian, 15 June 2017.</li>
+        <li id="s54">Jennifer Gollan, <a href="https://www.theguardian.com/us-news/2022/mar/12/congress-guns-domestic-abusers-violence-against-women-us">Congress steps up fight to get guns out of domestic abusers’ hands</a>, the Guardian, 12 March 2022.</li>
+        <li id="s55">Lisa Goodnight, <a href="https://www.theguardian.com/commentisfree/2019/jan/23/lets-hear-it-for-trailblazing-octogenarians">Let's hear it for trailblazing octogenarians</a>, the Guardian, 23 January 2019.</li>
+        <li id="s56">Martin Pengelly, <a href="https://www.theguardian.com/us-news/2025/jan/03/leon-panetta-trump-defense-national-security">Ex-CIA director Leon Panetta ‘hopeful’ that Trump will be more Reagan than ‘America First’ on national security</a>, the Guardian, 3 January 2025.</li>
+        <li id="s57">Nicole Puglise, <a href="https://www.theguardian.com/us-news/2016/jul/27/hillary-clinton-newspaper-front-pages">Hillary Clinton broke the glass ceiling – but didn't break many front pages</a>, the Guardian, 27 July 2016.</li>
+        <li id="s58">Daniel Strauss, <a href="https://www.theguardian.com/us-news/2021/jan/20/kamala-harris-sworn-in-vice-president">Kamala Harris sworn in as US’s first female, Black and south Asian vice-president</a>, the Guardian, 20 January 2021.</li>
+        <li id="s59">Miranda Bryant, <a href="https://www.theguardian.com/us-news/2019/oct/28/us-paid-family-leave-2020-election">The US doesn't offer paid family leave – but will that change in 2020?</a>, the Guardian, 28 October 2019.</li>
+        <li id="s60">Guardian readers, <a href="https://www.theguardian.com/books/2026/sep/08/she-blazed-in-and-opened-my-eyes-to-the-real-world-readers-remember-gloria-steinem">‘She blazed in and opened my eyes to the real world’: Readers remember Gloria Steinem</a>, the Guardian, 8 September 2026.</li>
       </ol>
     </div>
   </div>

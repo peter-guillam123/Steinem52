@@ -1,5 +1,5 @@
 // Linked, not ranked: scroll logic and the small interactives.
-import { PLACES, FLIPS, QUIZ, ERA, TILE, CONGRESS } from './data.js';
+import { PLACES, FLIPS, QUIZ, ERA, TILE, CONGRESS, ARRIVALS, KEY, ROE } from './data.js';
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -40,9 +40,10 @@ async function boot() {
       import('./scene.js'),
       fetch('data/land.json').then((r) => r.json()).catch(() => []),
       document.fonts?.load('600 200px Fraunces').catch(() => {}),
+      document.fonts?.load('italic 400 200px Fraunces').catch(() => {}),
     ]);
     scene = createScene(stage, { reduced, mobile, land, places: PLACES });
-    scene.onLight = showLit;
+    scene.bindDrag($('#globeDrag'));
     stage.classList.add('on');
     if (active) apply(active, true);
   } catch (err) {
@@ -53,15 +54,17 @@ async function boot() {
 
 // ---------- which section is in the middle of the screen ----------
 const sections = $$('[data-scene]');
-let active = null;
+let active = null, globeLive = false;
 const css = (name) => getComputedStyle(root).getPropertyValue(name).trim();
+// how far the reader is through the pyramid-to-circle passage, 0 to 1
+function rankP(sec) { const r = sec.getBoundingClientRect(), vh = innerHeight; return Math.min(1, Math.max(0, (-r.top - vh * 0.15) / Math.max(1, r.height - vh * 1.75))); }
 function apply(sec, force) {
   if (sec === active && !force) return;
   active = sec;
   root.dataset.theme = sec.dataset.theme || 'hero';
   $('meta[name="theme-color"]').content = css('--bg') || '#150b1d';
   $('.odo').classList.toggle('on', sec.id !== 'top' && sec.dataset.scene !== 'off');
-  stage.classList.toggle('globe-live', sec.dataset.globe === 'live');
+  globeLive = sec.dataset.globe === 'live';
   if (!scene) return;
   const name = sec.dataset.scene;
   scene.setVisible(name !== 'off');
@@ -69,11 +72,13 @@ function apply(sec, force) {
   requestAnimationFrame(() => scene.setColors(css('--accent'), css('--accent2')));
   const [x = 0, y = 0, o = 1] = (sec.dataset.pos || '').split(',').map(Number);
   const narrow = innerWidth < 900, reading = o < 1;
-  scene.place(narrow ? 0 : x, narrow && sec.dataset.globe ? 0.42 : y, narrow && reading ? Math.min(o, 0.3) : o);
-  if (sec.dataset.rank === 'live' && +rank.value > 0) scene.setRank(+rank.value / 100);
+  const flat = ['road', 'crowd', 'torches', 'dust'].includes(name);
+  // on a phone the shape sits in the top half and the words in the bottom half
+  scene.place(narrow ? 0 : x, narrow && !reading && !flat ? (sec.id === 'top' ? y : 0.4) : narrow && sec.dataset.globe ? 0.42 : y, narrow && reading ? Math.min(o, 0.3) : o);
+  if (sec.dataset.rank === 'scroll') scene.setRank(rankP(sec));
   else scene.setShape(name);
   if (sec.dataset.look) { const [la, lo] = sec.dataset.look.split(',').map(Number); scene.lookAt(la, lo, true); }
-  if (sec.dataset.globe === 'live') choosePlace(placeIdx, false);
+  if (globeLive) choosePlace(placeIdx, false);
   scene.torchLive(sec.dataset.theme === 'end');
 }
 const chapters = $$('[data-chapter]');
@@ -89,6 +94,7 @@ function onScroll() {
     let cur = sections[0];
     for (const s of sections) { if (s.getBoundingClientRect().top <= mid) cur = s; else break; }
     apply(cur);
+    if (scene && cur.dataset.rank === 'scroll') scene.setRank(rankP(cur));
     const r = cur.getBoundingClientRect(), p = Math.min(1, Math.max(0, (mid - r.top) / Math.max(1, r.height)));
     const y0 = +cur.dataset.year || 1934, y1 = +cur.dataset.yearEnd || y0, yr = Math.round(y0 + (y1 - y0) * p);
     if (odoY.textContent !== String(yr)) { odoY.textContent = yr; odoA.textContent = yr <= 1934 ? 'born' : `age ${yr - 1934}`; }
@@ -102,7 +108,7 @@ addEventListener('resize', onScroll);
 
 // ---------- globe: places ----------
 let placeIdx = 0;
-const placeList = $('#places'), placeCard = $('#placeCard');
+const placeList = $('#places'), placeCard = $('#placeCard'), globeLabel = $('#globeLabel'), dragBox = $('#globeDrag');
 PLACES.forEach((p, i) => {
   const li = document.createElement('li');
   li.innerHTML = `<button type="button" aria-pressed="${i === 0}"><small>${p.when}</small>${esc(p.short)}</button>`;
@@ -110,12 +116,23 @@ PLACES.forEach((p, i) => {
   placeList.append(li);
 });
 function choosePlace(i, user) {
-  placeIdx = i; const p = PLACES[i];
-  $$('button', placeList).forEach((b, j) => b.setAttribute('aria-pressed', j === i));
-  placeCard.innerHTML = `<p class="kicker" style="margin-bottom:.5rem">${p.when}</p><h4>${esc(p.name)}</h4><p>${p.text}${cite(p.cite)}</p>`;
-  if (scene && (user || scene.shape === 'globe')) scene.selectPlace(i);
+  placeIdx = (i + PLACES.length) % PLACES.length; const p = PLACES[placeIdx];
+  $$('button', placeList).forEach((b, j) => b.setAttribute('aria-pressed', j === placeIdx));
+  placeCard.innerHTML = `<p class="kicker" style="margin-bottom:.5rem">Stop ${placeIdx + 1} of ${PLACES.length} · ${p.when}</p><h4>${esc(p.name)}</h4><p>${p.text}${cite(p.cite)}</p>`;
+  globeLabel.innerHTML = `<b>${esc(p.short)}</b> ${p.when}`;
+  if (scene && (user || scene.shape === 'globe')) scene.selectPlace(placeIdx);
 }
+$('#placeNext').addEventListener('click', () => choosePlace(placeIdx + 1, true));
+$('#placePrev').addEventListener('click', () => choosePlace(placeIdx - 1, true));
 choosePlace(0, false);
+(function pin() { // keep the name tag on the chosen place as the globe turns
+  requestAnimationFrame(pin);
+  if (!scene || !globeLive) { globeLabel.classList.remove('on'); return; }
+  const q = scene.placeOnScreen(placeIdx); if (!q) return;
+  const box = dragBox.getBoundingClientRect(); // only show the tag where the globe is, not over the text
+  globeLabel.classList.toggle('on', q.facing && q.y > box.top - 10 && q.y < box.bottom + 10 && q.x > box.left - 10 && q.x < box.right + 10);
+  globeLabel.style.transform = `translate(${Math.round(q.x)}px, ${Math.round(q.y)}px)`;
+})();
 
 // ---------- the Bunny slip ----------
 const slipLines = $$('#slip li'), slipBtn = $('#slipBtn'), slipCount = $('#slipCount');
@@ -127,37 +144,6 @@ function slipStep() {
 function slipRun() { clearInterval(slipTimer); slipLines.forEach((l) => l.classList.remove('in')); slipN = 0; slipCount.textContent = `0 of ${slipLines.length} lines`; if (reduced) { while (slipN < slipLines.length) slipStep(); } else slipTimer = setInterval(slipStep, 620); }
 $('#slip').addEventListener('seen', slipRun);
 slipBtn.addEventListener('click', slipRun);
-
-// ---------- ranked to linked ----------
-const rank = $('#rankRange'), rankOut = $('#rankOut'), endA = $('#endA'), endB = $('#endB');
-const rankText = [
-  'A pyramid. A few at the top, most at the bottom, and orders that travel one way.',
-  'The rows loosen. People at the bottom can see past the people above them.',
-  'Halfway. Nobody is quite sure who is in charge, which is the point.',
-  'Almost a circle. Everyone can see everyone else’s face.',
-  'A talking circle. Anyone may speak in turn, everyone must listen.',
-];
-function onRank() {
-  const v = +rank.value; rank.style.setProperty('--v', v + '%');
-  rankOut.textContent = rankText[Math.min(4, Math.floor(v / 22))];
-  endA.style.opacity = 1 - v / 140; endB.style.opacity = .3 + v / 140; endB.style.color = v > 60 ? 'var(--accent)' : '';
-  if (scene) scene.setRank(v / 100);
-}
-rank.addEventListener('input', onRank); rank.style.setProperty('--v', '0%');
-
-// ---------- Ms.: the masthead ----------
-const WHY = {
-  'Ms.': `The winner. It came from a 1930s secretarial handbook, which advised it when a woman's marital status was unknown.${cite([12])}`,
-  Sojourner: `Rejected. It sounded “too much like a travel magazine”.${cite([12])}`,
-  Lilith: `Considered, and not chosen.${cite([12])}`,
-  Bimbo: `Also considered, and not chosen.${cite([12])}`,
-};
-const mastName = $('#mastName'), mastWhy = $('#mastWhy');
-$$('#mastRow button').forEach((b) => b.addEventListener('click', () => {
-  $$('#mastRow button').forEach((x) => x.setAttribute('aria-pressed', x === b));
-  mastName.textContent = b.dataset.n; mastName.classList.toggle('no', !!b.dataset.no); mastWhy.innerHTML = WHY[b.dataset.n];
-  if (!reduced && window.gsap) gsap.fromTo(mastName, { scale: .86, opacity: 0, rotate: -3 }, { scale: 1, opacity: 1, rotate: 0, duration: .7, ease: 'back.out(1.6)' });
-}));
 
 // ---------- Ms.: 300,000 in eight days ----------
 const dots = $('#msDots'), msNum = $('#msNum'), msDay = $('#msDay');
@@ -212,26 +198,65 @@ $('#eraPlay').addEventListener('click', () => { clearInterval(eraTimer); eraI = 
 drawEra(false);
 
 // ---------- women in Congress ----------
-const bars = $('#bars'), cgN = $('#cgN'), cgT = $('#cgT');
-const maxC = Math.max(...CONGRESS.map((c) => c[2] ));
+const bars = $('#bars'), cgN = $('#cgN'), cgT = $('#cgT'), cgY = $('#cgY'), cgNote = $('#cgNote'), cgNames = $('#cgNames');
+const maxC = Math.max(...CONGRESS.map((c) => c[2]));
 const ord = (n) => n + (['th', 'st', 'nd', 'rd'][(n % 100 > 10 && n % 100 < 14) ? 0 : n % 10] || 'th');
-bars.innerHTML = CONGRESS.map(([n, yr, total, h, s], i) => `<button type="button" style="--i:${i}" data-h="${(total / maxC) * 100}" class="${yr === 1933 || yr === 1971 || yr === 2025 ? 'mark' : ''}" aria-label="${ord(n)} Congress, ${yr} to ${yr + 2}: ${total} women, ${h} in the House and ${s} in the Senate"></button>`).join('');
+const keyIdx = CONGRESS.map((c, i) => (KEY[c[0]] ? i : -1)).filter((i) => i >= 0);
+bars.innerHTML = CONGRESS.map(([n, yr, total], i) => `<button type="button" style="--i:${i}" data-h="${(total / maxC) * 100}" class="${KEY[n] ? 'mark' : ''}" aria-label="${ord(n)} Congress, ${yr} to ${yr + 2}: ${total} women${KEY[n] ? '. ' + KEY[n][0] : ''}"></button>`).join('');
 const barEls = $$('button', bars);
+let cgI = 0;
 function showC(i) {
-  const [n, yr, total, h, s] = CONGRESS[i]; barEls.forEach((b, j) => b.classList.toggle('sel', j === i));
-  cgN.textContent = total;
-  const tag = yr === 1933 ? ' The Congress sitting when she was born.' : yr === 1971 ? ' The year the caucus was founded.' : yr === 2025 ? ' The Congress sitting when she died.' : '';
-  cgT.innerHTML = `${total === 1 ? 'woman' : 'women'} served in the ${ord(n)} Congress, ${yr}–${yr + 2}: ${h} in the House and ${s} in the Senate.${tag}`;
+  cgI = i; const [n, yr, total, h, s] = CONGRESS[i], k = KEY[n], who = ARRIVALS[n] || [];
+  barEls.forEach((b, j) => { b.classList.toggle('sel', j === i); b.tabIndex = j === i ? 0 : -1; });
+  cgY.textContent = `${ord(n)} Congress · ${yr}–${yr + 2}`; cgN.textContent = total;
+  cgT.textContent = `${total === 1 ? 'woman' : 'women'}: ${h} in the House, ${s} in the Senate`;
+  cgNote.innerHTML = k ? `<strong>${k[0]}.</strong> ${k[1]}${cite(k[2])}` : '';
+  const shown = who.slice(0, 12).map(esc).join(', ');
+  cgNames.innerHTML = who.length ? `<span>New this Congress (${who.length})</span>${shown}${who.length > 12 ? `, and ${who.length - 12} more` : ''}.` : '<span>New this Congress</span>No woman arrived for the first time.';
+  $('#cgPrev').disabled = !keyIdx.some((x) => x < i); $('#cgNext').disabled = !keyIdx.some((x) => x > i);
 }
-barEls.forEach((b, i) => { b.addEventListener('pointerenter', () => showC(i)); b.addEventListener('focus', () => showC(i)); b.addEventListener('click', () => showC(i));
-  b.addEventListener('keydown', (e) => { const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (d && barEls[i + d]) { e.preventDefault(); barEls[i + d].focus(); } }); b.tabIndex = i === CONGRESS.length - 1 ? 0 : -1; });
-$('#chart').addEventListener('seen', () => barEls.forEach((b) => { b.style.height = Math.max(.6, +b.dataset.h) + '%'; }));
-showC(CONGRESS.length - 1);
+barEls.forEach((b, i) => {
+  b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') showC(i); });
+  b.addEventListener('focus', () => showC(i)); b.addEventListener('click', () => showC(i));
+  b.addEventListener('keydown', (e) => { const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (d && barEls[i + d]) { e.preventDefault(); barEls[i + d].focus(); } });
+});
+$('#cgNext').addEventListener('click', () => { const n = keyIdx.find((x) => x > cgI); if (n !== undefined) showC(n); });
+$('#cgPrev').addEventListener('click', () => { const n = [...keyIdx].reverse().find((x) => x < cgI); if (n !== undefined) showC(n); });
+$('#chart').addEventListener('seen', () => barEls.forEach((b) => { b.style.height = Math.max(0.6, +b.dataset.h) + '%'; }));
+showC(0);
 
-// ---------- torches ----------
-const lightCount = $('#lightCount');
-function showLit(r) { if (r) lightCount.textContent = r.lit >= r.total ? `All ${r.total} torches are lit.` : `${r.lit} of ${r.total} torches lit.`; }
-$('#lightBtn').addEventListener('click', () => { if (scene) showLit(scene.lightNext()); else lightCount.textContent = 'The torches need WebGL, which this browser has switched off.'; });
+// ---------- while Roe stood ----------
+const roeTrack = $('#roeTrack'), LIFE0 = 1934.23, LIFE = 92.44;
+const pct = (y) => ((y - LIFE0) / LIFE) * 100;
+const span = $('.span', roeTrack); span.style.left = pct(1973.06) + '%'; span.style.width = pct(2022.48) - pct(1973.06) + '%';
+const usedYr = {};
+ROE.forEach(([yr, head], i) => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'tick';
+  const off = usedYr[yr] ? 0.9 : 0; usedYr[yr] = 1; b.style.left = pct(yr + 0.5 + off) + '%';
+  b.setAttribute('aria-label', `${yr}: ${head}`);
+  b.addEventListener('click', () => { stopRoe(); showRoe(i); });
+  roeTrack.append(b);
+});
+const roeTicks = $$('.tick', roeTrack);
+let roeI = 0, roeTimer = 0;
+function showRoe(i) {
+  roeI = i; const [yr, head, text, src] = ROE[i];
+  roeTicks.forEach((t, j) => { t.classList.toggle('on', j === i); t.classList.toggle('past', j < i); });
+  $('#roeYr').textContent = yr; $('#roeH').textContent = head; $('#roeP').innerHTML = text + cite(src);
+  $('#roeN').textContent = `${i + 1} of ${ROE.length}`;
+  $('#roePrev').disabled = i === 0; $('#roeNext').disabled = i === ROE.length - 1;
+}
+function stopRoe() { clearInterval(roeTimer); roeTimer = 0; $('#roePlay').textContent = 'Play'; }
+function playRoe() {
+  stopRoe(); if (roeI >= ROE.length - 1) showRoe(0);
+  $('#roePlay').textContent = 'Pause';
+  roeTimer = setInterval(() => { if (roeI >= ROE.length - 1) stopRoe(); else showRoe(roeI + 1); }, 2600);
+}
+$('#roePrev').addEventListener('click', () => { stopRoe(); showRoe(Math.max(0, roeI - 1)); });
+$('#roeNext').addEventListener('click', () => { stopRoe(); showRoe(Math.min(ROE.length - 1, roeI + 1)); });
+$('#roePlay').addEventListener('click', () => (roeTimer ? stopRoe() : playRoe()));
+$('#roe').addEventListener('seen', () => { if (!reduced) playRoe(); });
+showRoe(0);
 
 // ---------- go ----------
 onScroll();

@@ -167,7 +167,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .place-card h4 { font: 500 clamp(26px, 3vw, 40px)/1.05 var(--display); margin: 0 0 .5rem; font-variation-settings: "SOFT" 100, "WONK" 1; }
 .place-card p { margin: 0; color: var(--soft); }
 .globe-space { min-height: 52svh; }
-@media (max-width: 900px) { .globe-lab { grid-template-columns: 1fr; } .globe-space { min-height: 44svh; order: -1; } }
+@media (max-width: 900px) { .globe-lab { grid-template-columns: 1fr; } .globe-space { min-height: 44svh; order: -1; } .opener { align-content: end; padding-bottom: 9vh; } .globe-lab .places, .globe-lab .note { display: none; } .globe-lab .panel { padding: 18px; } .globe-lab h3 { font-size: 26px; margin-bottom: .6rem; } .globe-lab .tag { margin-bottom: .7rem; } .place-card { min-height: 12.5em; margin-top: 0; } .globe-space { min-height: 40svh; } .opener h2 { max-width: none; } .scrolly .step { align-items: end; padding-bottom: 7vh; } }
 
 /* the advert and the small print */
 .advert { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(18px, 3vw, 44px); align-items: start; }
@@ -295,6 +295,58 @@ details q { color: var(--ink); quotes: "\201C" "\201D"; font-family: var(--displ
 .span92 em.e { right: 0; text-align: right; }
 .span92 em.m { transform: translateX(-50%); color: var(--accent); text-align: center; }
 @media (max-width: 620px) { .span92 em.m { top: 52px; } }
+
+/* an idea told in a scroll: the text passes while the shape changes behind it */
+.scrolly { position: relative; padding: 0 var(--gutter); }
+.scrolly .step { min-height: 96svh; display: grid; align-items: center; }
+.scrolly .step .panel { max-width: 31rem; }
+.scrolly .step h3 { font-size: clamp(34px, 4.6vw, 64px); margin-bottom: 1rem; }
+.scrolly .step p { color: var(--soft); }
+.scrolly .step p.lead { font: 400 clamp(22px, 2.2vw, 32px)/1.25 var(--display); color: var(--ink); font-variation-settings: "SOFT" 100; letter-spacing: -.012em; }
+.scrolly .step p:last-child { margin-bottom: 0; }
+.scrolly .step strong { color: var(--ink); }
+
+/* globe: drag surface and the name tag pinned to the chosen place */
+#globeDrag { cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+#globeDrag.dragging { cursor: grabbing; }
+.globe-label { position: fixed; left: 0; top: 0; z-index: 5; pointer-events: none; opacity: 0; transition: opacity .4s; margin: -46px 0 0 14px; white-space: nowrap; background: var(--ink); color: #1a0a12; padding: 7px 11px; border-radius: 999px 999px 999px 4px; font: 500 12px/1 var(--mono); letter-spacing: .04em; box-shadow: 0 6px 24px rgba(0, 0, 0, .45); }
+.globe-label.on { opacity: 1; }
+.globe-label b { font: 600 14px/1 var(--body); letter-spacing: 0; margin-right: .4em; }
+.place-card { min-height: 15em; }
+.place-card + .steps { margin-top: 16px; }
+
+/* Congress: who arrived */
+.cg { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: clamp(16px, 3vw, 44px); min-height: 13.5em; margin-bottom: 20px; align-items: start; }
+.cg .yr { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+.cg b#cgN { display: block; font: 500 clamp(64px, 8vw, 120px)/.9 var(--display); letter-spacing: -.05em; color: var(--accent); font-variant-numeric: tabular-nums; }
+.cg #cgT { color: var(--soft); font-size: 15px; margin: 8px 0 0; }
+.cg-note { font: 400 clamp(17px, 1.5vw, 21px)/1.4 var(--display); font-variation-settings: "SOFT" 100; color: var(--ink); margin: 0 0 12px; }
+.cg-note:empty { display: none; }
+.cg-note strong { color: var(--accent2); font-weight: 500; }
+.cg-names { font-size: 14px; line-height: 1.55; color: var(--soft); margin: 0; }
+.cg-names span { display: block; font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.bars button.mark { background: var(--accent2); opacity: .9; }
+.bars button.sel { background: var(--accent); opacity: 1; }
+@media (max-width: 900px) { .cg { grid-template-columns: 1fr; min-height: 22em; } .bars { height: 34svh; } }
+
+/* while Roe stood */
+.roe-track { position: relative; height: 70px; margin: 8px 0 18px; }
+.roe-track .life, .roe-track .span { position: absolute; top: 14px; height: 16px; border-radius: 16px; }
+.roe-track .life { left: 0; width: 100%; background: var(--faint); }
+.roe-track .span { background: linear-gradient(90deg, rgba(255, 179, 71, .3), rgba(255, 90, 54, .3)); }
+.roe-track em { position: absolute; top: 44px; font: 500 11px/1 var(--mono); letter-spacing: .06em; font-style: normal; color: var(--soft); }
+.roe-track em.e { right: 0; }
+.roe-track .tick { position: absolute; top: 0; width: 44px; height: 44px; margin-left: -22px; padding: 0; border: 0; background: none; }
+.roe-track .tick::before { content: ""; position: absolute; left: 50%; top: 14px; width: 4px; height: 16px; margin-left: -2px; border-radius: 4px; background: var(--soft); opacity: .45; transition: all .4s var(--ease); }
+.roe-track .tick.past::before { background: var(--accent); opacity: .9; }
+.roe-track .tick.on::before { background: var(--ink); opacity: 1; top: 4px; height: 36px; width: 6px; margin-left: -3px; box-shadow: 0 0 18px var(--accent); }
+.roe-track .tick:hover::before { opacity: 1; }
+.roe-card { display: grid; grid-template-columns: auto 1fr; gap: clamp(16px, 3vw, 40px); align-items: start; min-height: 8.5em; margin-bottom: 14px; }
+.roe-card b { font: 500 clamp(56px, 8vw, 116px)/.86 var(--display); letter-spacing: -.05em; color: var(--accent); font-variant-numeric: tabular-nums; }
+.roe-card h4 { font: 500 clamp(22px, 2.4vw, 32px)/1.1 var(--display); font-variation-settings: "SOFT" 100, "WONK" 1; margin: .2em 0 .4em; }
+.roe-card p { margin: 0; color: var(--soft); max-width: 36rem; }
+.roe-n { font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--soft); margin-left: 6px; }
+@media (max-width: 620px) { .roe-card { grid-template-columns: 1fr; gap: 4px; min-height: 13em; } }
 
 /* ending */
 .fin { min-height: 130svh; display: grid; place-items: center; text-align: center; padding: 14vh var(--gutter); }
