@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en-GB" data-theme="hero">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About: Linked, not ranked</title>
+<meta name="description" content="What this piece on Gloria Steinem is, how it was made, and a diary of the build.">
+<meta name="theme-color" content="#150b1d">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<div class="grain" aria-hidden="true"></div>
+<header class="hud" style="position:absolute"><a class="mark" href="index.html"><i></i>Linked, not ranked</a></header>
+<main class="about" id="main">
+  <p class="kicker">About this piece</p>
+  <h1>What this is, and how it was made</h1>
+
+  <p>Gloria Steinem died on 2 September 2026. This is an attempt to tell her 92 years in one long scroll, using her own words wherever I could find them and check them.</p>
+  <p>I didn't write the code. I described what I wanted to Claude, Anthropic's AI model, and it did the research, the writing, the design and the typing. I gave it one brief: make it beautiful, make it accurate, and show every source. This is a test of what the model can do with that brief, so the credit and the blame are both shared.</p>
+
+  <h2>What you are looking at</h2>
+  <p>Ten chapters, from a trailer in the 1930s to a house in Manhattan full of talking circles. Behind the text is one cloud of about 26,000 points of light that takes a new shape for each chapter: her aviator glasses, a road, the globe, a pair of rabbit ears, a pyramid that turns into a circle, the word Ms., two rings, a crowd and a field of torches.</p>
+  <p>There are eight things to play with. You can step through the places of her life on the globe, print the small print of the Playboy Club job, drag a pyramid into a circle, try the names Ms. magazine turned down, watch 300,000 copies sell in eight days, turn over her lines from “If Men Could Menstruate”, guess which famous lines were really hers, and count the states that ratified the Equal Rights Amendment.</p>
+
+  <h2>The rule about quotations</h2>
+  <p>A quotation is on the page only if its wording was checked against the full text of the source it cites. In practice that meant Guardian and Observer articles, read through the Guardian's content API: her interviews, her own pieces for the paper, and passages from her books that the paper printed.</p>
+  <p>The rule cost us some good material. The machine this was built on could not open most of the web, so her 1970 Senate testimony, her 1971 speech to the National Women's Political Caucus and most of her magazine essays could not be read in full. They are described but barely quoted. A few lines everybody knows are missing because nobody could find where she said them.</p>
+  <p>It also turned up things worth knowing. She did not coin the fish and the bicycle. Good sources disagree about whether she spent 11 days or three weeks as a Bunny. The page says so in both cases, which feels to me more useful than picking one and hoping.</p>
+  <p>If you find a mistake, it is probably real, and I would like to know.</p>
+
+  <h2>How it is built</h2>
+  <p>Plain HTML, CSS and JavaScript, with no build step. The 3D scene uses three.js and the scroll effects use GSAP. The type is Fraunces, Instrument Sans and IBM Plex Mono. The photographs are public domain or openly licensed, mostly from the Library of Congress and the US National Archives, and each is credited where it appears.</p>
+  <p>It works by keyboard, it has text alternatives for the pictures and charts, and if you have asked your device to reduce motion the particles hold still.</p>
+
+  <h2>Diary</h2>
+  <div class="entry milestone">
+    <time datetime="2026-11-10">10 November 2026 · milestone</time>
+    <h3>First version, built in an afternoon</h3>
+    <p>I asked for a recreation of a piece I had commissioned from an earlier model a few weeks before, without looking at the old one. The brief was a lush scrolling life of Gloria Steinem, in her own words, with every source shown.</p>
+    <p>The research came first: about 240 facts and 99 quotations, each tagged by how it had been checked. The awkward discovery was that the build machine could read the Guardian and not much else. Rather than quote from memory, we set the rule above and cut whatever failed it.</p>
+    <p>Then the page: ten chapters, one particle scene, eight interactives. The idea I like best is the simplest. Her phrase “linked, not ranked” became a slider that turns a pyramid of people into a circle.</p>
+    <p>Still to do: read the testimony and the essays in full and quote them properly, and add a photograph of her with Dorothy Pitman Hughes if a free one exists.</p>
+  </div>
+
+  <p style="margin-top:3rem"><a href="index.html">Back to the piece</a></p>
+</main>
+</body>
+</html>
