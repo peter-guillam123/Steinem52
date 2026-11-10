@@ -211,8 +211,8 @@ function showC(i) {
   cgY.textContent = `${ord(n)} Congress · ${yr}–${yr + 2}`; cgN.textContent = total;
   cgT.textContent = `${total === 1 ? 'woman' : 'women'}: ${h} in the House, ${s} in the Senate`;
   cgNote.innerHTML = k ? `<strong>${k[0]}.</strong> ${k[1]}${cite(k[2])}` : '';
-  const shown = who.slice(0, 12).map(esc).join(', ');
-  cgNames.innerHTML = who.length ? `<span>New this Congress (${who.length})</span>${shown}${who.length > 12 ? `, and ${who.length - 12} more` : ''}.` : '<span>New this Congress</span>No woman arrived for the first time.';
+  const shown = who.slice(0, 8).map(esc).join(', ');
+  cgNames.innerHTML = who.length ? `<span>New this Congress (${who.length})</span>${shown}${who.length > 8 ? `, and ${who.length - 8} more` : ''}.` : '<span>New this Congress</span>No woman arrived for the first time.';
   $('#cgPrev').disabled = !keyIdx.some((x) => x < i); $('#cgNext').disabled = !keyIdx.some((x) => x > i);
 }
 barEls.forEach((b, i) => {

@@ -316,18 +316,23 @@ details q { color: var(--ink); quotes: "\201C" "\201D"; font-family: var(--displ
 .place-card + .steps { margin-top: 16px; }
 
 /* Congress: who arrived */
-.cg { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: clamp(16px, 3vw, 44px); min-height: 13.5em; margin-bottom: 20px; align-items: start; }
-.cg .yr { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
-.cg b#cgN { display: block; font: 500 clamp(64px, 8vw, 120px)/.9 var(--display); letter-spacing: -.05em; color: var(--accent); font-variant-numeric: tabular-nums; }
-.cg #cgT { color: var(--soft); font-size: 15px; margin: 8px 0 0; }
-.cg-note { font: 400 clamp(17px, 1.5vw, 21px)/1.4 var(--display); font-variation-settings: "SOFT" 100; color: var(--ink); margin: 0 0 12px; }
+/* readout on the left, bars on the right, so the whole player fits on one screen */
+.chart { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(18px, 3vw, 48px); align-items: stretch; --cgh: clamp(250px, 46svh, 400px); }
+.cg-side { display: flex; flex-direction: column; min-height: calc(var(--cgh) + 22px); }
+.cg-side .yr { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+.cg-count { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; }
+.cg-count b { font: 500 clamp(52px, 5.4vw, 84px)/.9 var(--display); letter-spacing: -.05em; color: var(--accent); font-variant-numeric: tabular-nums; }
+.cg-count p { color: var(--soft); font-size: 14px; line-height: 1.35; margin: 0; }
+.cg-note { font: 400 clamp(16px, 1.25vw, 19px)/1.38 var(--display); font-variation-settings: "SOFT" 100; color: var(--ink); margin: 0 0 10px; }
 .cg-note:empty { display: none; }
 .cg-note strong { color: var(--accent2); font-weight: 500; }
-.cg-names { font-size: 14px; line-height: 1.55; color: var(--soft); margin: 0; }
-.cg-names span { display: block; font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.cg-names { font-size: 13px; line-height: 1.5; color: var(--soft); margin: 0 0 14px; }
+.cg-names span { display: block; font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.cg-side .steps { margin-top: auto; }
+.cg-main .bars { height: var(--cgh); }
 .bars button.mark { background: var(--accent2); opacity: .9; }
 .bars button.sel { background: var(--accent); opacity: 1; }
-@media (max-width: 900px) { .cg { grid-template-columns: 1fr; min-height: 22em; } .bars { height: 34svh; } }
+@media (max-width: 900px) { .chart { grid-template-columns: 1fr; --cgh: 30svh; } .cg-side { min-height: 23em; } }
 
 /* while Roe stood */
 .roe-track { position: relative; height: 70px; margin: 8px 0 18px; }

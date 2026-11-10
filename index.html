@@ -321,13 +321,17 @@
   <div class="lab">
     <header class="rv"><span class="tag">Explore · 1917 to 2026</span><h3>Who got in, and what they changed</h3><p>The caucus she helped found in 1971 existed to put women in office. Each bar is one Congress. Pick any bar to see who arrived, or step through the key years.</p></header>
     <div class="chart panel rv" id="chart">
-      <div class="cg">
-        <div class="cg-a"><p class="yr" id="cgY"></p><b id="cgN">1</b><p id="cgT"></p></div>
-        <div class="cg-b"><p class="cg-note" id="cgNote" aria-live="polite"></p><p class="cg-names" id="cgNames"></p></div>
+      <div class="cg-side">
+        <p class="yr" id="cgY"></p>
+        <div class="cg-count"><b id="cgN">1</b><p id="cgT"></p></div>
+        <p class="cg-note" id="cgNote" aria-live="polite"></p>
+        <p class="cg-names" id="cgNames"></p>
+        <div class="steps"><button class="btn" type="button" id="cgPrev" aria-label="Earlier key year">←</button><button class="btn solid" type="button" id="cgNext">Next key year →</button></div>
       </div>
-      <div class="bars" id="bars" role="group" aria-label="Number of women serving as voting members in each Congress, 1917 to 2026"></div>
-      <div class="axis"><span>1917</span><span>1934: she is born</span><span>1971: the caucus</span><span>2025</span></div>
-      <div class="steps" style="margin-top:18px"><button class="btn" type="button" id="cgPrev" aria-label="Earlier key year">←</button><button class="btn solid" type="button" id="cgNext">Next key year →</button></div>
+      <div class="cg-main">
+        <div class="bars" id="bars" role="group" aria-label="Number of women serving as voting members in each Congress, 1917 to 2026"></div>
+        <div class="axis"><span>1917</span><span>1934: she is born</span><span>1971: the caucus</span><span>2025</span></div>
+      </div>
     </div>
     <p class="note rv">Counts are women who served as voting members at any point in each two-year Congress, worked out from the open congress-legislators dataset, as are the names of new arrivals.<a class="cite" href="#s40">40</a> A count taken on a single day would be slightly lower.</p>
   </div>
